@@ -116,15 +116,15 @@ if st.session_state.get("evaluacion_enviada"):
     col1, col2 = st.columns(2)
     with col1:
         if st.button("📝 Otra evaluación"):
-           keys_a_borrar = [
-            "preguntas",
-            "evaluacion_enviada"
+            claves_a_borrar = [
+                "evaluacion_enviada",
+                "preguntas"
             ]
-        keys_a_borrar += [k for k in st.session_state if k.startswith("radio_")]
-            for k in keys_a_borrar:
+            claves_a_borrar += [k for k in st.session_state.keys() if k.startswith("radio_")]
+            for k in claves_a_borrar:
                 if k in st.session_state:
-            del st.session_state[k]
-        st.experimental_rerun()        
+                    del st.session_state[k]
+            st.experimental_rerun()
 
     with col2:
         if st.button("🚪 Cerrar"):
