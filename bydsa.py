@@ -109,18 +109,20 @@ if enviado:
         st.write("🛠 Paso 5: Datos preparados para envío")
         st.json(datos)  # Visualiza el JSON enviado
 
-        try:
-            r = requests.post(WEB_APP_URL, json=datos)
-            st.write("🛠 Paso 6: POST enviado, analizando respuesta...")
+try:
+    r = requests.post(WEB_APP_URL, json=datos)
+    st.write("🛠 Paso 6: POST enviado, analizando respuesta...")
 
-            if r.status_code == 200 and "OK" in r.text:
-                st.write("🛠 Paso 7: Respuesta recibida satisfactoriamente")
-                st.write("✅ Evaluación enviada exitosamente.")
-                st.session_state.pop("preguntas")
-            else:
-                st.write("🛠 Paso 8: Error en respuesta del servidor")
-                st.write(f"Respuesta: {r.text}")
-                st.write("❌ Error al enviar los datos.")
-        except Exception as e:
-            st.write("🛠 Paso 9: Error de conexión")
-            st.write(f"Excepción: {e}")
+    if r.status_code == 200 and "OK" in r.text:
+        st.write("🛠 Paso 7: Respuesta recibida satisfactoriamente")
+        st.success("✅ Evaluación enviada exitosamente.")
+        st.session_state.pop("preguntas")
+    else:
+        st.write("🛠 Paso 8: Error en respuesta del servidor")
+        st.text("Respuesta cruda del servidor:")
+        st.text(r.text)
+        st.warning("❌ Error al enviar los datos.")
+except Exception as e:
+    st.write("🛠 Paso 9: Error de conexión")
+    st.text(f"Excepción: {e}")
+
