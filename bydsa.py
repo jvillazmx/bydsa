@@ -11,13 +11,12 @@ st.title("📋 Evaluación interna BYDSA")
 
 # Instrucciones
 st.subheader("Instrucciones")
-st.write(
-    "Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada, "
-    "donde **1** indica que la persona *nunca o casi nunca* muestra ese comportamiento y **5** indica que "
-    "la persona *siempre o casi siempre* muestra ese comportamiento.\n\n"
-    "La persona evaluada **no recibirá el detalle** del nombre o nombres de quienes la han evaluado, "
-    "solo un **resumen general** de sus resultados."
-)
+st.write("Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada.")
+st.write("• 1 indica que la persona *nunca o casi nunca* muestra ese comportamiento.")
+st.write("• 5 indica que la persona *siempre o casi siempre* muestra ese comportamiento.")
+st.write("La persona evaluada **no recibirá el detalle del nombre o nombres** de quienes la han evaluado,")
+st.write("solo un **resumen general de sus resultados**.")
+
 
 # Ruta a la carpeta 'csv'
 csv_dir = os.path.join(os.getcwd(), "csv")
