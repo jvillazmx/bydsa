@@ -5,9 +5,19 @@ import requests
 from datetime import date
 import os
 
-st.set_page_config(page_title="Evaluación BYDSA", layout="centered")
+st.set_page_config(page_title="Evaluación interna BYDSA", layout="centered")
 
-st.title("🧭 Evaluación de Comportamientos - BYDSA")
+st.title("📋 Evaluación interna BYDSA")
+
+# Instrucciones
+st.markdown("""
+**Instrucciones:**  
+Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada,  
+donde **1** indica que la persona **nunca o casi nunca** muestra ese comportamiento y **5** indica que la persona  
+**siempre o casi siempre** muestra ese comportamiento.  
+La persona evaluada **no recibirá el detalle** del nombre o nombres de quienes la han evaluado,  
+solo un **resumen general** de sus resultados.
+""")
 
 # Ruta a la carpeta 'csv'
 csv_dir = os.path.join(os.getcwd(), "csv")
@@ -36,12 +46,16 @@ def cargar_preguntas():
                 for _, row in seleccionadas.iterrows():
                     preguntas.append({
                         "categoria": categoria,
-                        "numero": row["NUMERO"],
+                        "numero": str(row["NUMERO"]),
                         "pregunta": row["PREGUNTA"]
                     })
     return preguntas
 
-# Formulario de cabecera
+# Cargar preguntas solo una vez
+if "preguntas" not in st.session_state:
+    st.session_state.preguntas = cargar_preguntas()
+
+# Formulario
 with st.form("formulario_evaluacion"):
     col1, col2 = st.columns(2)
     with col1:
@@ -51,37 +65,39 @@ with st.form("formulario_evaluacion"):
     fecha_eval = st.date_input("📅 Fecha de evaluación", value=date.today())
 
     st.markdown("---")
+    st.markdown("### Responde a cada afirmación:")
 
-    st.markdown("### Responde a cada afirmación según tu percepción del evaluado:")
-
-    preguntas = cargar_preguntas()
     respuestas = {}
 
-    for i, item in enumerate(preguntas, 1):
+    for i, item in enumerate(st.session_state.preguntas, 1):
         st.markdown(f"**{i}. {item['categoria']}**")
         st.write(item["pregunta"])
         key = f"{item['categoria']}_{item['numero']}"
         respuestas[key] = st.radio(
-            label="Selecciona un valor (1 = nunca, 5 = siempre)",
+            label="Selecciona un valor:",
             options=[1, 2, 3, 4, 5],
             index=None,
-            key=key,
+            key=f"radio_{key}",
             horizontal=True
         )
 
     enviado = st.form_submit_button("Enviar evaluación")
 
-# Envío al Web App si se presiona el botón
+# Procesar envío
 if enviado:
     if not evaluador or not evaluado:
         st.warning("⚠️ Debes completar el nombre del evaluador y evaluado.")
-    elif any(r is None for r in respuestas.values()):
+    elif any(v is None for v in respuestas.values()):
         st.warning("⚠️ Debes contestar todas las preguntas antes de enviar.")
     else:
         datos = []
         for key, valor in respuestas.items():
             categoria, numero = key.split("_", 1)
-            pregunta_texto = next((p["pregunta"] for p in preguntas if p["categoria"] == categoria and str(p["numero"]) == numero), "")
+            pregunta_texto = next(
+                (p["pregunta"] for p in st.session_state.preguntas
+                 if p["categoria"] == categoria and p["numero"] == numero),
+                ""
+            )
             datos.append({
                 "fecha": str(fecha_eval),
                 "evaluador": evaluador,
@@ -96,6 +112,9 @@ if enviado:
             r = requests.post(WEB_APP_URL, json=datos)
             if r.status_code == 200 and "OK" in r.text:
                 st.success("✅ Evaluación enviada exitosamente.")
+                st.balloons()
+                # Reiniciar estado
+                st.session_state.pop("preguntas")
             else:
                 st.error(f"❌ Error al enviar los datos: {r.text}")
         except Exception as e:
