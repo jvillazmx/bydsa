@@ -8,15 +8,8 @@ import os
 st.set_page_config(page_title="Evaluación interna BYDSA", layout="centered")
 
 st.title("📋 Evaluación interna BYDSA")
-
-# Instrucciones
-st.subheader("Instrucciones")
-st.write("Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada.")
-st.write("• 1 indica que la persona *nunca o casi nunca* muestra ese comportamiento.")
-st.write("• 5 indica que la persona *siempre o casi siempre* muestra ese comportamiento.")
-st.write("La persona evaluada **no recibirá el detalle del nombre o nombres** de quienes la han evaluado,")
-st.write("solo un **resumen general de sus resultados**.")
-
+st.subheader("Instrucción")
+st.write("Usa una escala del 1 (nunca) al 5 (siempre) para calificar cada afirmación.")
 
 # Ruta a la carpeta 'csv'
 csv_dir = os.path.join(os.getcwd(), "csv")
@@ -112,7 +105,6 @@ if enviado:
             if r.status_code == 200 and "OK" in r.text:
                 st.success("✅ Evaluación enviada exitosamente.")
                 st.balloons()
-                # Reiniciar estado
                 st.session_state.pop("preguntas")
             else:
                 st.error(f"❌ Error al enviar los datos: {r.text}")
