@@ -77,11 +77,17 @@ with st.form("formulario_evaluacion"):
 
 # Procesar envío
 if enviado:
+    st.write("🛠 Paso 1: Se presionó el botón de envío")
+
     if not evaluador or not evaluado:
-        st.warning("⚠️ Debes completar el nombre del evaluador y evaluado.")
+        st.write("🛠 Paso 2: Validación de campos vacíos falló")
+        st.warning("Debes completar el nombre del evaluador y evaluado.")
     elif any(v is None for v in respuestas.values()):
-        st.warning("⚠️ Debes contestar todas las preguntas antes de enviar.")
+        st.write("🛠 Paso 3: Validación de respuestas incompletas falló")
+        st.warning("Debes contestar todas las preguntas antes de enviar.")
     else:
+        st.write("🛠 Paso 4: Validaciones pasadas. Preparando datos")
+
         datos = []
         for key, valor in respuestas.items():
             categoria, numero = key.split("_", 1)
@@ -100,13 +106,21 @@ if enviado:
                 "valor": valor
             })
 
+        st.write("🛠 Paso 5: Datos preparados para envío")
+        st.json(datos)  # Visualiza el JSON enviado
+
         try:
             r = requests.post(WEB_APP_URL, json=datos)
+            st.write("🛠 Paso 6: POST enviado, analizando respuesta...")
+
             if r.status_code == 200 and "OK" in r.text:
-                st.success("✅ Evaluación enviada exitosamente.")
-                st.balloons()
+                st.write("🛠 Paso 7: Respuesta recibida satisfactoriamente")
+                st.write("✅ Evaluación enviada exitosamente.")
                 st.session_state.pop("preguntas")
             else:
-                st.error(f"❌ Error al enviar los datos: {r.text}")
+                st.write("🛠 Paso 8: Error en respuesta del servidor")
+                st.write(f"Respuesta: {r.text}")
+                st.write("❌ Error al enviar los datos.")
         except Exception as e:
-            st.error(f"🚫 No se pudo conectar con el servidor: {e}")
+            st.write("🛠 Paso 9: Error de conexión")
+            st.write(f"Excepción: {e}")
