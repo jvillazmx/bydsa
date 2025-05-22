@@ -14,16 +14,13 @@ st.write("Usa una escala del 1 (nunca) al 5 (siempre) para calificar cada afirma
 # Ruta a la carpeta 'csv'
 csv_dir = os.path.join(os.getcwd(), "csv")
 
-# Archivos CSV por categoría
 archivos = [
     "adaptacion.csv", "colaboracion.csv", "compromiso.csv", "cumplimiento.csv",
     "estrategia.csv", "impacto.csv", "mejora.csv", "resiliencia.csv"
 ]
 
-# ✅ NUEVA URL del Web App actualizada
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyvOmFmYuIn_V8E2jwOBEEoLq-VduuSgjj_Y-LYDLldjTRwi7z2-6uei6ikDggKjTJOmw/exec"
 
-# Función para cargar preguntas
 def cargar_preguntas():
     preguntas = []
     for archivo in archivos:
@@ -43,11 +40,10 @@ def cargar_preguntas():
                     })
     return preguntas
 
-# Cargar preguntas solo una vez
 if "preguntas" not in st.session_state:
     st.session_state.preguntas = cargar_preguntas()
 
-# Formulario
+# Formulario principal
 with st.form("formulario_evaluacion"):
     col1, col2 = st.columns(2)
     with col1:
@@ -77,14 +73,11 @@ with st.form("formulario_evaluacion"):
 
 # Procesar envío
 if enviado:
-    st.write("🛠 Paso 1: Botón presionado")
-
     if not evaluador or not evaluado:
         st.warning("⚠️ Debes completar el nombre del evaluador y evaluado.")
     elif any(v is None for v in respuestas.values()):
         st.warning("⚠️ Debes contestar todas las preguntas antes de enviar.")
     else:
-        st.write("🛠 Paso 2: Validación completada. Preparando datos para envío.")
         datos = []
         for key, valor in respuestas.items():
             categoria, numero = key.split("_", 1)
@@ -108,7 +101,21 @@ if enviado:
             if r.status_code == 200 and "OK" in r.text:
                 st.success("✅ Evaluación enviada exitosamente.")
                 st.balloons()
-                st.session_state.pop("preguntas")
+
+                # Mostrar panel con opciones
+                st.markdown("---")
+                st.subheader("¿Qué deseas hacer ahora?")
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    if st.button("📝 Otra evaluación"):
+                        st.session_state.pop("preguntas", None)
+                        st.rerun()
+
+                with col2:
+                    if st.button("🚪 Cerrar"):
+                        st.markdown("Gracias por participar. Puedes cerrar esta pestaña.")
+                        st.stop()
             else:
                 st.warning("⚠️ El servidor respondió con error.")
         except Exception as e:
