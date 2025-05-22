@@ -20,8 +20,8 @@ archivos = [
     "estrategia.csv", "impacto.csv", "mejora.csv", "resiliencia.csv"
 ]
 
-# URL de tu Web App en Google Apps Script
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw0Flcbt4T_-C72kL_C8SqAdxQRjbauVumHxNPJxIUZC3tcdTh-v6CGOVp7rIPAlh6htA/exec"
+# ✅ NUEVA URL del Web App actualizada
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyvOmFmYuIn_V8E2jwOBEEoLq-VduuSgjj_Y-LYDLldjTRwi7z2-6uei6ikDggKjTJOmw/exec"
 
 # Función para cargar preguntas
 def cargar_preguntas():
@@ -77,17 +77,14 @@ with st.form("formulario_evaluacion"):
 
 # Procesar envío
 if enviado:
-    st.write("🛠 Paso 1: Se presionó el botón de envío")
+    st.write("🛠 Paso 1: Botón presionado")
 
     if not evaluador or not evaluado:
-        st.write("🛠 Paso 2: Validación de campos vacíos falló")
-        st.warning("Debes completar el nombre del evaluador y evaluado.")
+        st.warning("⚠️ Debes completar el nombre del evaluador y evaluado.")
     elif any(v is None for v in respuestas.values()):
-        st.write("🛠 Paso 3: Validación de respuestas incompletas falló")
-        st.warning("Debes contestar todas las preguntas antes de enviar.")
+        st.warning("⚠️ Debes contestar todas las preguntas antes de enviar.")
     else:
-        st.write("🛠 Paso 4: Validaciones pasadas. Preparando datos")
-
+        st.write("🛠 Paso 2: Validación completada. Preparando datos para envío.")
         datos = []
         for key, valor in respuestas.items():
             categoria, numero = key.split("_", 1)
@@ -106,23 +103,13 @@ if enviado:
                 "valor": valor
             })
 
-        st.write("🛠 Paso 5: Datos preparados para envío")
-        st.json(datos)  # Visualiza el JSON enviado
-
-try:
-    r = requests.post(WEB_APP_URL, json=datos)
-    st.write("🛠 Paso 6: POST enviado, analizando respuesta...")
-
-    if r.status_code == 200 and "OK" in r.text:
-        st.write("🛠 Paso 7: Respuesta recibida satisfactoriamente")
-        st.success("✅ Evaluación enviada exitosamente.")
-        st.session_state.pop("preguntas")
-    else:
-        st.write("🛠 Paso 8: Error en respuesta del servidor")
-        st.text("Respuesta cruda del servidor:")
-        st.text(r.text)
-        st.warning("❌ Error al enviar los datos.")
-except Exception as e:
-    st.write("🛠 Paso 9: Error de conexión")
-    st.text(f"Excepción: {e}")
-
+        try:
+            r = requests.post(WEB_APP_URL, json=datos)
+            if r.status_code == 200 and "OK" in r.text:
+                st.success("✅ Evaluación enviada exitosamente.")
+                st.balloons()
+                st.session_state.pop("preguntas")
+            else:
+                st.warning("⚠️ El servidor respondió con error.")
+        except Exception as e:
+            st.error(f"🚫 No se pudo conectar con el servidor: {e}")
