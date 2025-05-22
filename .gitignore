@@ -1,0 +1,5 @@
+# Ignorar archivos sensibles y temporales
+streamlit-sheets.json
+.streamlit/secrets.toml
+*.pyc
+__pycache__/
