@@ -10,14 +10,14 @@ st.set_page_config(page_title="Evaluación interna BYDSA", layout="centered")
 st.title("📋 Evaluación interna BYDSA")
 
 # Instrucciones
-st.markdown("""
-**Instrucciones:**  
-Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada,  
-donde **1** indica que la persona **nunca o casi nunca** muestra ese comportamiento y **5** indica que la persona  
-**siempre o casi siempre** muestra ese comportamiento.  
-La persona evaluada **no recibirá el detalle** del nombre o nombres de quienes la han evaluado,  
-solo un **resumen general** de sus resultados.
-""")
+st.subheader("Instrucciones")
+st.write(
+    "Por favor responda a cada pregunta en el número que mejor represente a la persona evaluada, "
+    "donde **1** indica que la persona *nunca o casi nunca* muestra ese comportamiento y **5** indica que "
+    "la persona *siempre o casi siempre* muestra ese comportamiento.\n\n"
+    "La persona evaluada **no recibirá el detalle** del nombre o nombres de quienes la han evaluado, "
+    "solo un **resumen general** de sus resultados."
+)
 
 # Ruta a la carpeta 'csv'
 csv_dir = os.path.join(os.getcwd(), "csv")
